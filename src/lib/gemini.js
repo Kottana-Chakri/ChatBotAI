@@ -1,7 +1,18 @@
 import axios from 'axios';
 
-// Gemini API key - prioritize environment variable for production security
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCw999aBsphGLevSk8Up68H_i8_WQoq_Fc';
+// Gemini API key - works in both Node.js and Vite/browser
+let GEMINI_API_KEY;
+if (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) {
+  GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY;
+} else {
+  let viteKey;
+  try {
+    viteKey = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GEMINI_API_KEY;
+  } catch (e) {
+    viteKey = undefined;
+  }
+  GEMINI_API_KEY = viteKey || 'AIzaSyCw999aBsphGLevSk8Up68H_i8_WQoq_Fc';
+}
 
 /**
  * Calls Google's Gemini API as a fallback when open-source LLM fails
